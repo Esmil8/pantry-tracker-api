@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlserver"
+}
+
+model User {
+  Id           Int          @id @default(autoincrement())
+  Name         String       @db.NVarChar(100)
+  LastName     String       @db.NVarChar(100)
+  Email        String       @unique @db.NVarChar(100)
+  PasswordHash String       @db.NVarChar(255)
+  CreatedDate  DateTime     @default(now()) @db.DateTime
+  UpdatedDate  DateTime     @updatedAt @db.DateTime
+  PantryItems  PantryItem[]
+}
+
+model Category {
+  Id          Int       @id @default(autoincrement())
+  Name        String    @db.NVarChar(100)
+  Description String    @db.NVarChar(255)
+  CreatedDate DateTime  @default(now()) @db.DateTime
+  UpdatedDate DateTime  @updatedAt @db.DateTime
+  Product     Product[]
+}
+
+model Unit {
+  Id           Int       @id @default(autoincrement())
+  Name         String    @db.NVarChar(100)
+  Abbreviation String    @db.NVarChar(10)
+  CreatedDate  DateTime  @default(now()) @db.DateTime
+  UpdatedDate  DateTime  @updatedAt @db.DateTime
+  Product      Product[]
+}
+
+model PantryItem {
+  Id             Int       @id @default(autoincrement())
+  UserId         Int
+  User           User      @relation(fields: [UserId], references: [Id])
+  ProductId      Int
+  Product        Product   @relation(fields: [ProductId], references: [Id])
+  ExpirationDate DateTime? @db.Date
+  Location       String?   @db.NVarChar(255)
+  Quantity       Decimal   @db.Decimal(10, 5)
+  Notes          String?   @db.NVarChar(500)
+  CreatedDate    DateTime  @default(now()) @db.DateTime
+  UpdatedDate    DateTime  @updatedAt @db.DateTime
+
+  @@unique([UserId, ProductId, ExpirationDate, Location])
+}
+
+model Product {
+  Id          Int          @id @default(autoincrement())
+  CategoryId  Int
+  Category    Category     @relation(fields: [CategoryId], references: [Id])
+  UnitId      Int
+  Unit        Unit         @relation(fields: [UnitId], references: [Id])
+  Name        String       @db.NVarChar(100)
+  Description String       @db.NVarChar(255)
+  Brand       String       @db.NVarChar(100)
+  BarCode     String       @unique @db.NVarChar(50)
+  CreatedDate DateTime     @default(now()) @db.DateTime
+  UpdatedDate DateTime     @updatedAt @db.DateTime
+  pantryItems PantryItem[]
+}
