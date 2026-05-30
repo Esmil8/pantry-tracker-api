@@ -1,0 +1,47 @@
+@baseUrl = http://localhost:8000
+@name = Esmil
+@lastName = Adames
+@email = esmildev@gmail.com
+@password = esmit3402
+
+### Registro de usuario (Corregido)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "Name": "{{name}}",
+    "LastName": "{{lastName}}",
+    "Email": "{{email}}",
+    "Password": "{{password}}",
+    "ConfirmPassword": "{{password}}"
+}
+
+
+@user_email = esmildev@gmail.com
+@user_password = esmit3402
+
+### Login
+# @name auth_request
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "Email": "{{user_email}}",
+    "Password": "{{user_password}}"
+}
+
+### ---------------------------------------------------------
+### Crear Producto
+POST {{baseUrl}}/products
+Content-Type: application/json
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+{
+    "Name": "Arroz Selecto",
+    "Description": "Arroz de grano largo premium",
+    "Brand": "La Garza",
+    "BarCode": "7441234567890",
+    "Quantity": 5,
+    "CategoryId": 1,
+    "UnitId": 2
+}

@@ -2,6 +2,7 @@ import express from 'express'
 import morgan from 'morgan'
 import { GlobalErrorHandler } from './Shared/GlobalErrorHandler'
 import pantryRoutes from './Modules/Pantry/pantry.route'
+import productRoutes from './Modules/Product/product.route'
 import authRoutes from './Modules/Auth/Auth.route'
 import helmet from 'helmet'
 import "dotenv/config"
@@ -14,8 +15,8 @@ app.use(helmet())
 app.use(express.json())
 
 //Routes
-app.use('/api')
 app.use('/pantry', pantryRoutes)
+app.use('/products', productRoutes)
 app.use('/auth', authRoutes)
 
 //Error Handler
