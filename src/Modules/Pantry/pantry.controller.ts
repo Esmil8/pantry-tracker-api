@@ -7,34 +7,45 @@ export class PantryController {
 
     constructor(private pantryService: PantryService) { }
 
-
     async CreatePantry(req: Request, res: Response) {
+        const { user } = req as AuthInterface;
+        const UserId = Number(user?.id);
+        const Data = req.body;
 
-        const { user } = req as AuthInterface
-
-        const UserId = Number(user?.id)
-        const Data = req.body
-
-        await this.pantryService.createPantry(UserId, Data)
+        await this.pantryService.createPantry(UserId, Data);
 
         return res.status(201).json({
-
             Data: Data,
-            Message: "Created successfully"
-        })
+            Message: "Pantry created successfully"
+        });
     }
 
+    async AddItemToPantry(req: Request, res: Response) {
+        const { user } = req as AuthInterface;
+        const UserId = Number(user?.id);
+        const PantryId = Number(req.params.pantryId);
+        const Data = req.body;
 
-    async FilterInventoryByUser(req: Request, res: Response) {
+        await this.pantryService.addPantryItem(UserId, PantryId, Data);
 
-        const page = Number(req.query.page) || 1
-        const limit = Number(req.query.limit) || 20
+        return res.status(201).json({
+            Status: "Success",
+            Message: "Item added to pantry successfully"
+        });
+    }
+
+    async FilterInventoryByPantry(req: Request, res: Response) {
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 20;
         const { status } = req.query as PantryQueryDto;
-        const { user } = req as AuthInterface
-        const UserId = Number(user?.id)
+        const { user } = req as AuthInterface;
+        
+        const UserId = Number(user?.id);
+        const PantryId = Number(req.params.pantryId);
 
-        const data = await this.pantryService.findAllByUser(
+        const data = await this.pantryService.findAllItemsByPantry(
             UserId,
+            PantryId,
             status,
             page,
             limit
@@ -44,43 +55,36 @@ export class PantryController {
             Status: "Success",
             Data: data,
             Message: "Fetched successfully"
-
-        })
+        });
     }
 
-
-    async UpdatePantry(req: Request, res: Response) {
-
+    async UpdatePantryItem(req: Request, res: Response) {
         const { user } = req as AuthInterface;
+        const UserId = Number(user?.id);
+        const PantryId = Number(req.params.pantryId);
+        const ItemId = Number(req.params.id);
+        const Data = req.body;
 
-        const UserId = Number(user?.id)
-        const ItemId = Number(req.params.id)
-
-
-        const Data = req.body
-        await this.pantryService.updatePantry(UserId, ItemId, Data)
+        await this.pantryService.updatePantryItem(UserId, PantryId, ItemId, Data);
 
         return res.status(200).json({
             Status: "Success",
             Message: "Item Updated Successfully"
-        })
+        });
     }
 
-    async DeletePantry(req: Request, res: Response) {
-
+    async DeletePantryItem(req: Request, res: Response) {
         const { user } = req as AuthInterface;
-        const UserId = Number(user?.id)
-        const ItemId = Number(req.params.id)
+        const UserId = Number(user?.id);
+        const PantryId = Number(req.params.pantryId);
+        const ItemId = Number(req.params.id);
 
-        await this.pantryService.deletePantryItem(UserId, ItemId)
+        const data = await this.pantryService.deletePantryItem(UserId, PantryId, ItemId);
 
         return res.status(200).json({
-            "Status": "Success",
-            "Message": "Item deleted successfully"
-        })
+            Status: "Success",
+            Data: data,
+            Message: "Item deleted successfully"
+        });
     }
-
-
-
-
 }

@@ -2,7 +2,7 @@ import { LoginController } from './Auth.controller'
 import { Router } from 'express'
 import { LoginService } from './AuthService'
 import { LoginSchema, RegisterSchema } from './Auth.schema'
-import { validate } from '../../Shared/Middlewares/Middleware'
+import { validate } from '../../Shared/Middlewares/MiddlewareValidator';
 
 const AuthService = new LoginService()
 const authController = new LoginController(AuthService);

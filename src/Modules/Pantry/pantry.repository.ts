@@ -1,23 +1,41 @@
 import { prisma } from '../../Shared/Prisma';
 import { Prisma } from '../../../generated/prisma';
-import { CreatePantryDto, UpdatePantryDto } from './pantry.schema'
+import { CreatePantryDto, AddPantryItemDto, UpdatePantryItemDto } from './pantry.schema'
 import { getLimit } from '../../Shared/Pagination.helper';
 
 export class PantryRepository {
 
-    async CreatePantry(UserId: number, Data: CreatePantryDto) {
-
-        return await prisma.pantryItem.create({ data: { ...Data, UserId: UserId } })
+    async createPantry(UserId: number, Data: CreatePantryDto) {
+        return await prisma.pantry.create({
+            data: {
+                Name: Data.Name,
+                UserId: UserId
+            }
+        });
     }
 
+    async findPantryById(PantryId: number) {
+        return await prisma.pantry.findUnique({
+            where: { Id: PantryId }
+        });
+    }
 
-    async FindManyByUserId(userId: number, DateFilter?: Prisma.DateTimeFilter, page: number = 1, limit: number = 20) {
+    async addPantryItem(PantryId: number, Data: AddPantryItemDto) {
+        return await prisma.pantryItem.create({
+            data: {
+                ...Data,
+                PantryId: PantryId
+            }
+        });
+    }
 
+    async findItemsByPantryId(PantryId: number, DateFilter?: Prisma.DateTimeFilter, page: number = 1, limit: number = 20) {
         const { skip, limit: take } = getLimit(page, limit);
 
         return await prisma.pantryItem.findMany({
             where: {
-                UserId: userId, ExpirationDate: DateFilter
+                PantryId: PantryId,
+                ExpirationDate: DateFilter
             },
             skip,
             take,
@@ -25,26 +43,22 @@ export class PantryRepository {
         });
     }
 
-    async UpdatePantry(UserId: number, ItemId: number, Data: UpdatePantryDto) {
-
+    async updatePantryItem(PantryId: number, ItemId: number, Data: UpdatePantryItemDto) {
         return await prisma.pantryItem.updateMany({
             where: {
                 Id: ItemId,
-                UserId: UserId
+                PantryId: PantryId
             },
             data: Data
-        })
-
+        });
     }
 
-    async DeletePantryItem(UserId: number, ItemId: number) {
-
+    async deletePantryItem(PantryId: number, ItemId: number) {
         return await prisma.pantryItem.deleteMany({
             where: {
                 Id: ItemId,
-                UserId: UserId
+                PantryId: PantryId
             }
-        })
+        });
     }
 }
-

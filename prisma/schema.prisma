@@ -13,14 +13,14 @@ datasource db {
 }
 
 model User {
-  Id           Int          @id @default(autoincrement())
-  Name         String       @db.NVarChar(100)
-  LastName     String       @db.NVarChar(100)
-  Email        String       @unique @db.NVarChar(100)
-  PasswordHash String       @db.NVarChar(255)
-  CreatedDate  DateTime     @default(now()) @db.DateTime
-  UpdatedDate  DateTime     @updatedAt @db.DateTime
-  PantryItems  PantryItem[]
+  Id           Int      @id @default(autoincrement())
+  Name         String   @db.NVarChar(100)
+  LastName     String   @db.NVarChar(100)
+  Email        String   @unique @db.NVarChar(100)
+  PasswordHash String   @db.NVarChar(255)
+  CreatedDate  DateTime @default(now()) @db.DateTime
+  UpdatedDate  DateTime @updatedAt @db.DateTime
+  Pantries     Pantry[]
 }
 
 model Category {
@@ -41,10 +41,20 @@ model Unit {
   Product      Product[]
 }
 
+model Pantry {
+  Id          Int          @id @default(autoincrement())
+  Name        String       @db.NVarChar(100)
+  UserId      Int
+  User        User         @relation(fields: [UserId], references: [Id])
+  CreatedDate DateTime     @default(now()) @db.DateTime
+  UpdatedDate DateTime     @updatedAt @db.DateTime
+  PantryItems PantryItem[]
+}
+
 model PantryItem {
   Id             Int       @id @default(autoincrement())
-  UserId         Int
-  User           User      @relation(fields: [UserId], references: [Id])
+  PantryId       Int
+  Pantry         Pantry    @relation(fields: [PantryId], references: [Id])
   ProductId      Int
   Product        Product   @relation(fields: [ProductId], references: [Id])
   ExpirationDate DateTime? @db.Date
@@ -54,7 +64,7 @@ model PantryItem {
   CreatedDate    DateTime  @default(now()) @db.DateTime
   UpdatedDate    DateTime  @updatedAt @db.DateTime
 
-  @@unique([UserId, ProductId, ExpirationDate, Location])
+  @@unique([PantryId, ProductId, ExpirationDate, Location])
 }
 
 model Product {
@@ -69,5 +79,5 @@ model Product {
   BarCode     String       @unique @db.NVarChar(50)
   CreatedDate DateTime     @default(now()) @db.DateTime
   UpdatedDate DateTime     @updatedAt @db.DateTime
-  pantryItems PantryItem[]
+  PantryItems PantryItem[]
 }
