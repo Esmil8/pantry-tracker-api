@@ -3,7 +3,6 @@ import { ProductService } from './product.service';
 import { ProductRepository } from './product.repository';
 import { CreateProductDto, UpdateProductDto, GetProductsQueryDto } from './product.schema';
 
-// Mock the ProductRepository and Prisma
 vi.mock('./product.repository');
 vi.mock('../../Shared/Prisma', () => ({
     prisma: {}
@@ -14,7 +13,6 @@ describe('ProductService', () => {
     let repository: Mocked<ProductRepository>;
 
     beforeEach(() => {
-        // Clear all mocks before each test
         vi.clearAllMocks();
 
         repository = new ProductRepository() as Mocked<ProductRepository>;

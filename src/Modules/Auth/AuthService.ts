@@ -1,7 +1,7 @@
-import { AuthInterface, LoginSchemaDto, RegisterSchemaDto } from './Auth.schema.ts'
+import { AuthInterface, LoginSchemaDto, RegisterSchemaDto } from './Auth.schema'
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { prisma } from '../../Shared/Prisma.ts';
+import { prisma } from '../../Shared/Prisma';
 import { email } from 'zod';
 
 export class LoginService {

@@ -1,6 +1,6 @@
 import { prisma } from '../../Shared/Prisma';
 import { Prisma } from '../../../generated/prisma';
-import { CreatePantryDto, AddPantryItemDto, UpdatePantryItemDto } from './pantry.schema'
+import { CreatePantryDto, findPantryItemQueryDto, AddPantryItemDto, UpdatePantryItemDto } from './pantry.schema'
 import { getLimit } from '../../Shared/Pagination.helper';
 
 export class PantryRepository {
@@ -29,17 +29,24 @@ export class PantryRepository {
         });
     }
 
-    async findItemsByPantryId(PantryId: number, DateFilter?: Prisma.DateTimeFilter, page: number = 1, limit: number = 20) {
+    async findItemsByPantryId(PantryId: number, filters: { productName?: string, DateFilter?: Prisma.DateTimeFilter }, page: number = 1, limit: number = 20) {
         const { skip, limit: take } = getLimit(page, limit);
 
         return await prisma.pantryItem.findMany({
             where: {
                 PantryId: PantryId,
-                ExpirationDate: DateFilter
+                ExpirationDate: filters.DateFilter,
+
+                Product: filters.productName ? {
+                    Name: {
+                        contains: filters.productName
+                    }
+                } : undefined
             },
             skip,
             take,
             include: { Product: true },
+            orderBy: { ExpirationDate: 'asc' }
         });
     }
 
