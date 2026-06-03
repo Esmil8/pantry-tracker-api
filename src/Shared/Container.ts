@@ -6,6 +6,14 @@ import { ProductRepository } from '../Modules/Product/product.repository';
 import { ProductService } from '../Modules/Product/product.service';
 import { ProductController } from '../Modules/Product/product.controller';
 
+import { CategoryRepository } from '../Modules/Category/category.repository';
+import { CategoryService } from '../Modules/Category/category.service';
+import { CategoryController } from '../Modules/Category/category.controller';
+
+import { UnitRepository } from '../Modules/Unit/unit.repository';
+import { UnitService } from '../Modules/Unit/unit.service';
+import { UnitController } from '../Modules/Unit/unit.controller';
+
 export class ProductContainer {
 
     private static _productRepository = new ProductRepository();
@@ -26,3 +34,24 @@ export class PantryContainer {
         return this._pantryController;
     }
 }
+
+export class CategoryContainer {
+    private static _categoryRepository = new CategoryRepository();
+    private static _categoryService = new CategoryService(this._categoryRepository);
+    private static _categoryController = new CategoryController(this._categoryService);
+
+    static get CategoryController() {
+        return this._categoryController;
+    }
+}
+
+export class UnitContainer {
+    private static _unitRepository = new UnitRepository();
+    private static _unitService = new UnitService(this._unitRepository);
+    private static _unitController = new UnitController(this._unitService);
+
+    static get UnitController() {
+        return this._unitController;
+    }
+}
+

@@ -12,6 +12,14 @@ export const addPantryItemSchema = z.object({
     Notes: z.string().max(500).nullable().optional(),
 });
 
+export const findPantryItemQuerySchema = z.object({
+    ProductId: z.coerce.number().int().positive().optional(),
+    PantryId: z.coerce.number().int().positive(),
+    ProductName: z.string().min(1).optional(),
+    ExpirationDate: z.coerce.date().optional(),
+    Location: z.string().max(255).nullable().optional(),
+})
+
 export const getPantrySchema = z.object({
     Id: z.number().int().positive(),
     PantryId: z.number().int().positive(),
@@ -40,9 +48,10 @@ export const getPantryItemParamsSchema = z.object({
     id: z.coerce.number().int().positive()
 });
 
-export type PantryQueryDto = z.infer<typeof pantryQuerySchema>;
-
 export const updatePantryItemSchema = addPantryItemSchema.partial();
+
+export type PantryQueryDto = z.infer<typeof pantryQuerySchema>;
+export type findPantryItemQueryDto = z.infer<typeof findPantryItemQuerySchema>;
 export type CreatePantryDto = z.infer<typeof createPantrySchema>;
 export type AddPantryItemDto = z.infer<typeof addPantryItemSchema>;
 export type UpdatePantryItemDto = z.infer<typeof updatePantryItemSchema>;
