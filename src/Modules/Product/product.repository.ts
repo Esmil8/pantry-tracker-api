@@ -21,9 +21,23 @@ export class ProductRepository {
                 CategoryId: query.categoryId ? { equals: query.categoryId } : undefined,
                 UnitId: query.unitId ? { equals: query.unitId } : undefined,
             },
-            include: {
-                Category: true,
-                Unit: true,
+
+            select: {
+                Id: true,
+                Name: true,
+                Brand: true,
+                BarCode: true,
+
+                Category: {
+                    select: {
+                        Name: true,
+                    }
+                },
+                Unit: {
+                    select: {
+                        Abbreviation: true
+                    }
+                },
             },
             take,
             skip,
