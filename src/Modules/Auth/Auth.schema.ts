@@ -22,3 +22,11 @@ export const RegisterSchema = z.object({
 })
 
 export type RegisterSchemaDto = z.infer<typeof RegisterSchema>
+
+export const changePasswordSchema = z.object({
+    currentPassword: z.string().min(6),
+    newPassword: z.string().min(6),
+    confirmNewPassword: z.string().min(6),
+})
+
+export type ChangePasswordDto = z.infer<typeof changePasswordSchema>;
