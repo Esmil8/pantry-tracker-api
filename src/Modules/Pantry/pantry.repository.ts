@@ -20,6 +20,16 @@ export class PantryRepository {
         });
     }
 
+    async findPantriesByUser(UserId: number) {
+        return await prisma.pantry.findMany({
+            where: { UserId: UserId },
+            select: {
+                Id: true,
+                Name: true
+            }
+        });
+    }
+
     async addPantryItem(PantryId: number, Data: AddPantryItemDto) {
         return await prisma.pantryItem.create({
             data: {
@@ -33,19 +43,17 @@ export class PantryRepository {
         const { skip, limit: take } = getLimit(page, limit);
 
         return await prisma.pantryItem.findMany({
-            where: {
-                PantryId: PantryId,
-                ExpirationDate: filters.DateFilter,
-
-                Product: filters.productName ? {
-                    Name: {
-                        contains: filters.productName
-                    }
-                } : undefined
+            where: { PantryId: PantryId, ExpirationDate: filters.DateFilter, Product: { Name: filters.productName ?? undefined } },
+            select: {
+                Id: true,
+                Quantity: true,
+                ExpirationDate: true,
+                Product: {
+                    select: { Id: true, Name: true }
+                },
             },
             skip,
             take,
-            include: { Product: true },
             orderBy: { ExpirationDate: 'asc' }
         });
     }

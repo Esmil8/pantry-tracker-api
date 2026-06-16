@@ -10,25 +10,21 @@ export class PantryService {
         this.pantryRepository = pantryRepository;
     }
 
-    getItemStatus(exp: Date | null) {
+    getItemStatus(exp: Date | null, nowMs: number) {
         if (!exp) return 'NO_EXPIRATION';
-        const now = new Date()
-        now.setUTCHours(0, 0, 0, 0)
-
-        const ExpDate = new Date(exp)
-        ExpDate.setUTCHours(0, 0, 0, 0)
-        const DiffDays = Math.round((ExpDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-        if (DiffDays < 0) {
+        const expMs = exp.getTime();
+        const diffDays = Math.round((expMs - nowMs) / (1000 * 60 * 60 * 24))
+        if (diffDays < 0) {
             return 'EXPIRED'
         }
-        if (DiffDays === 0) {
+        if (diffDays === 0) {
             return `EXPIRING_TODAY`
         }
-        if (DiffDays <= 3) {
-            return `CRITICAL_EXPIRING_IN_${DiffDays}_DAYS`
+        if (diffDays <= 3) {
+            return `CRITICAL_EXPIRING_IN_${diffDays}_DAYS`
         }
-        if (DiffDays <= 7) {
-            return `EXPIRING_IN_${DiffDays}_DAYS`
+        if (diffDays <= 7) {
+            return `EXPIRING_IN_${diffDays}_DAYS`
         }
         return `FRESH`
     }
@@ -106,6 +102,21 @@ export class PantryService {
         };
     }
 
+    async findPantriesByUser(userId: number) {
+        const pantries = await this.pantryRepository.findPantriesByUser(userId);
+
+        if (pantries.length === 0) {
+            const error: any = new Error("Pantries not found");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        return {
+            message: "Pantries found successfully",
+            pantries
+        };
+    }
+
     async findAllItemsByPantry(userId: number, pantryId: number, status?: string, page: number = 1, limit: number = 20, ProductName?: string) {
         const pantry = await this.pantryRepository.findPantryById(pantryId);
 
@@ -122,6 +133,9 @@ export class PantryService {
         }
 
         const DateFilter = this.getExpirationFilters(status);
+        const nowUTC = new Date();
+        nowUTC.setUTCHours(0, 0, 0, 0);
+        const nowMs = nowUTC.getTime();
 
         const items = await this.pantryRepository.findItemsByPantryId(
             pantryId,
@@ -133,7 +147,7 @@ export class PantryService {
 
         return items.map(item => ({
             ...item,
-            status: this.getItemStatus(item.ExpirationDate)
+            status: this.getItemStatus(item.ExpirationDate, nowMs)
 
         }));
     }

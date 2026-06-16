@@ -34,9 +34,22 @@ export class PantryController {
         });
     }
 
+    async FindPantriesByUser(req: Request, res: Response) {
+        const { user } = req as AuthInterface;
+        const UserId = Number(user?.id);
+
+        const data = await this.pantryService.findPantriesByUser(UserId);
+
+        return res.status(200).json({
+            Status: "Success",
+            Data: data,
+            Message: "Pantries fetched successfully"
+        });
+    }
+
     async FilterInventoryByPantry(req: Request, res: Response) {
         const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 20;
+        const limit = Number(req.query.limit) || 10;
         const { status } = req.query as PantryQueryDto;
         const { user } = req as AuthInterface;
 
