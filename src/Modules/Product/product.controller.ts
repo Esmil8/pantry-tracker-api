@@ -24,7 +24,7 @@ export class ProductController {
     async getProducts(req: Request, res: Response) {
 
         const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 20;
+        const limit = Number(req.query.limit) || 10;
         const query = req.query as unknown as GetProductsQueryDto;
         const data = await this.service.getProducts(query, page, limit);
 
