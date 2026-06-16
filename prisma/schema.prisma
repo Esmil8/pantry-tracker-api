@@ -40,16 +40,18 @@ model Pantry {
   Id          Int          @id @default(autoincrement())
   Name        String       @db.NVarChar(100)
   UserId      Int
-  User        User         @relation(fields: [UserId], references: [Id])
+  User        User         @relation(fields: [UserId], references: [Id], onDelete: Cascade)
   CreatedDate DateTime     @default(now()) @db.DateTime
   UpdatedDate DateTime     @updatedAt @db.DateTime
   PantryItems PantryItem[]
+
+  @@index([UserId])
 }
 
 model PantryItem {
   Id             Int       @id @default(autoincrement())
   PantryId       Int
-  Pantry         Pantry    @relation(fields: [PantryId], references: [Id])
+  Pantry         Pantry    @relation(fields: [PantryId], references: [Id], onDelete: Cascade)
   ProductId      Int
   Product        Product   @relation(fields: [ProductId], references: [Id])
   ExpirationDate DateTime? @db.Date
@@ -60,6 +62,7 @@ model PantryItem {
   UpdatedDate    DateTime  @updatedAt @db.DateTime
 
   @@unique([PantryId, ProductId, ExpirationDate, Location])
+  @@index([PantryId])
 }
 
 model Product {
@@ -75,4 +78,7 @@ model Product {
   CreatedDate DateTime     @default(now()) @db.DateTime
   UpdatedDate DateTime     @updatedAt @db.DateTime
   PantryItems PantryItem[]
+
+  @@index([CategoryId])
+  @@index([UnitId])
 }

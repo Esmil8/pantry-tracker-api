@@ -4,6 +4,10 @@ export const createPantrySchema = z.object({
     Name: z.string().min(1).max(100),
 });
 
+export const userIdParamsSchema = z.object({
+    userId: z.coerce.number().int().positive(),
+})
+
 export const addPantryItemSchema = z.object({
     ProductId: z.coerce.number().int().positive(),
     Quantity: z.number().positive(),

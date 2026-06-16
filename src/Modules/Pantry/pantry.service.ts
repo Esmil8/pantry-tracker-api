@@ -1,3 +1,4 @@
+import { gte } from 'zod';
 import { PantryRepository } from './pantry.repository';
 import { CreatePantryDto, AddPantryItemDto, UpdatePantryItemDto, findPantryItemQueryDto } from './pantry.schema';
 
@@ -9,50 +10,54 @@ export class PantryService {
         this.pantryRepository = pantryRepository;
     }
 
-    getItemStatus(exp: Date | null) {
+    getItemStatus(exp: Date | null, nowMs: number) {
         if (!exp) return 'NO_EXPIRATION';
-        const now = new Date()
-        const TodayUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
-        const ExpDate = Date.UTC(exp.getUTCFullYear(), exp.getUTCMonth(), exp.getUTCDate())
-        const DiffDays = Math.round((ExpDate - TodayUTC) / (1000 * 60 * 60 * 24))
-        console.log(`Días de diferencia calculados: ${DiffDays}`);
-        if (DiffDays < 0) {
+        const expMs = exp.getTime();
+        const diffDays = Math.round((expMs - nowMs) / (1000 * 60 * 60 * 24))
+        if (diffDays < 0) {
             return 'EXPIRED'
         }
-        if (DiffDays === 0) {
+        if (diffDays === 0) {
             return `EXPIRING_TODAY`
         }
-        if (DiffDays <= 3) {
-            return `CRITICAL_EXPIRING_IN_${DiffDays}_DAYS`
+        if (diffDays <= 3) {
+            return `CRITICAL_EXPIRING_IN_${diffDays}_DAYS`
         }
-        if (DiffDays <= 7) {
-            return `EXPIRING_IN_${DiffDays}_DAYS`
+        if (diffDays <= 7) {
+            return `EXPIRING_IN_${diffDays}_DAYS`
         }
         return `FRESH`
     }
 
     getExpirationFilters(status?: string) {
         const now = new Date()
-        const TodayUTC = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+        now.setUTCHours(0, 0, 0, 0)
+        const TodayUTC = now.toISOString();
 
         switch (status) {
             case 'EXPIRED': return { lt: TodayUTC }
             case 'EXPIRING_TODAY': return { equals: TodayUTC }
             case 'CRITICAL':
-                const in3Days = new Date()
-                in3Days.setDate(in3Days.getDate() + 3);
+                const in3Days = new Date(now)
+                in3Days.setUTCDate(in3Days.getUTCDate() + 3);
+
                 return {
                     gt: TodayUTC,
-                    lt: in3Days
+                    lt: in3Days.toISOString()
                 }
             case 'EXPIRING_IN_7_DAYS':
-                const in7Days = new Date()
-                in7Days.setDate(in7Days.getDate() + 7);
+                const since3Days = new Date(now)
+                since3Days.setUTCDate(since3Days.getUTCDate() + 3)
+                const in7Days = new Date(now)
+                in7Days.setUTCDate(in7Days.getUTCDate() + 7);
                 return {
-                    gt: TodayUTC,
-                    lt: in7Days
+                    gt: since3Days.toISOString(),
+                    lt: in7Days.toISOString()
                 }
-            case 'FRESH': return { gt: TodayUTC }
+            case 'FRESH':
+                const since7Days = new Date(now)
+                since7Days.setUTCDate(since7Days.getUTCDate() + 7)
+                return { gte: since7Days.toISOString() }
         }
         return {}
     }
@@ -97,6 +102,21 @@ export class PantryService {
         };
     }
 
+    async findPantriesByUser(userId: number) {
+        const pantries = await this.pantryRepository.findPantriesByUser(userId);
+
+        if (pantries.length === 0) {
+            const error: any = new Error("Pantries not found");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        return {
+            message: "Pantries found successfully",
+            pantries
+        };
+    }
+
     async findAllItemsByPantry(userId: number, pantryId: number, status?: string, page: number = 1, limit: number = 20, ProductName?: string) {
         const pantry = await this.pantryRepository.findPantryById(pantryId);
 
@@ -113,6 +133,9 @@ export class PantryService {
         }
 
         const DateFilter = this.getExpirationFilters(status);
+        const nowUTC = new Date();
+        nowUTC.setUTCHours(0, 0, 0, 0);
+        const nowMs = nowUTC.getTime();
 
         const items = await this.pantryRepository.findItemsByPantryId(
             pantryId,
@@ -124,7 +147,7 @@ export class PantryService {
 
         return items.map(item => ({
             ...item,
-            status: this.getItemStatus(item.ExpirationDate)
+            status: this.getItemStatus(item.ExpirationDate, nowMs)
 
         }));
     }

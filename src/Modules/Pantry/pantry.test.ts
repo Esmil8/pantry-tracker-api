@@ -21,34 +21,34 @@ describe('pantryService - getItemStatus', () => {
     })
 
     it('It should be null', () => {
-        const status = service.getItemStatus(null);
+        const status = service.getItemStatus(null, Date.now());
         expect(status).toBe('NO_EXPIRATION');
     })
 
     it(' It should be EXPIRED ', () => {
         const yesterday = new Date()
         yesterday.setDate(yesterday.getDate() - 1)
-        const result = service.getItemStatus(yesterday)
+        const result = service.getItemStatus(yesterday, Date.now())
         expect(result).toBe('EXPIRED')
     })
 
     it(' It should be  EXPIRING_TODAY', () => {
         const today = new Date()
-        const result = service.getItemStatus(today)
+        const result = service.getItemStatus(today, Date.now())
         expect(result).toBe('EXPIRING_TODAY')
     })
 
     it(' It should be CRITICAL_EXPIRING_IN_3_DAYS', () => {
         const in3Days = new Date();
         in3Days.setDate(in3Days.getDate() + 3)
-        const result = service.getItemStatus(in3Days)
+        const result = service.getItemStatus(in3Days, Date.now())
         expect(result).toBe('CRITICAL_EXPIRING_IN_3_DAYS')
     });
 
     it('It should be EXPIRING_IN_7_DAYS', () => {
         const in7Days = new Date();
         in7Days.setDate(in7Days.getDate() + 7)
-        const result = service.getItemStatus(in7Days)
+        const result = service.getItemStatus(in7Days, Date.now())
         expect(result).toBe('EXPIRING_IN_7_DAYS')
     });
 
