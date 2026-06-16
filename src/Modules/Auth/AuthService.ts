@@ -16,7 +16,7 @@ export class LoginService {
             throw error
         }
 
-        const PasswordCompare = await argon2.verify(Data.Password, User.PasswordHash)
+        const PasswordCompare = await argon2.verify(User.PasswordHash, Data.Password)
         if (!PasswordCompare) {
 
             const error: any = new Error("Invalid credentials")
@@ -89,6 +89,8 @@ export class LoginService {
         const PasswordCompare = await argon2.verify(User.PasswordHash, currentPassword);
         if (!PasswordCompare) throw new Error("Invalid password");
 
+        // Al tener configurado el 'onDelete: Cascade' en Prisma, 
+        // esta sola línea borrará todo el árbol de despensas e ítems.
         await prisma.user.delete({ where: { Id: userId } });
         return "User deleted successfully";
     }
