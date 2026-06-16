@@ -1,9 +1,8 @@
 @baseUrl = http://localhost:8000
 @name = Esmil
 @lastName = Adames
-@email = esmildev@gmail.com
-@password = esmit3402
-
+@email = {{$dotenv EMAIL_ADDRESS}}
+@password = {{$dotenv EMAIL_PASSWORD}}
 ### =========================================================
 ###                      AUTH MODULE
 ### =========================================================
@@ -21,8 +20,6 @@ Content-Type: application/json
 }
 
 
-@user_email = esmildev@gmail.com
-@user_password = esmit3402
 
 ### Login
 # @name auth_request
@@ -30,9 +27,13 @@ POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-    "Email": "{{user_email}}",
-    "Password": "{{user_password}}"
+    "Email": "{{email}}",
+    "Password": "{{password}}"
 }
+
+### Borrar Usuario
+DELETE {{baseUrl}}/auth/delete
+Authorization: Bearer {{auth_request.response.body.Data.token}}
 
 ### =========================================================
 ###                    PRODUCTS MODULE
@@ -156,16 +157,20 @@ Authorization: Bearer {{auth_request.response.body.Data.token}}
     "Notes": "Comprado en oferta"
 }
 
+### Obtener despensas
+GET {{baseUrl}}/pantry/1
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
 ### Obtener Items de una Despensa
 GET {{baseUrl}}/pantry/1/items?page=1&limit=20
 Authorization: Bearer {{auth_request.response.body.Data.token}}
 
 ### Obtener Items filtrados por estado de expiración
-GET {{baseUrl}}/pantry/1/items?status=FRESH&page=1&limit=20
+GET {{baseUrl}}/pantry/1/items?status=CRITICAL&page=1&limit=20
 Authorization: Bearer {{auth_request.response.body.Data.token}}
 
 ### Obtener Items filtrados por nombre de producto
-GET {{baseUrl}}/pantry/1/items?ProductName=Arroz&page=1&limit=20
+GET {{baseUrl}}/pantry/2/items?ProductName=Arroz&page=1&limit=20
 Authorization: Bearer {{auth_request.response.body.Data.token}}
 
 ### Actualizar Item de la Despensa

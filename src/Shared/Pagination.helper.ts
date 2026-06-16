@@ -1,5 +1,5 @@
 
-export const getLimit = (page: number = 1, limit: number = 20) => {
+export const getLimit = (page: number = 1, limit: number = 10) => {
 
     const safeLimit = Math.min(limit, 100)
 

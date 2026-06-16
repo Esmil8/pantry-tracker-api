@@ -1,5 +1,9 @@
-node_modules
-# Keep environment variables out of version control
+cat <<EOF > .gitignore
+node_modules/
+dist/
+.clinic/
 .env
-
-/generated/prisma
+*.log
+.DS_Store
+EOF
+generated/
