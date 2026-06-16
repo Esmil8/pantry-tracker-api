@@ -1,9 +1,19 @@
-cat <<EOF > .gitignore
+# Dependencias de Node
 node_modules/
+
+# Archivos de compilación (TypeScript a JavaScript)
 dist/
-.clinic/
+
+# Variables de entorno y credenciales (¡Seguridad crítica!)
 .env
+.env.*
+
+# Reportes y logs de pruebas de rendimiento
+.clinic/
 *.log
+
+# Archivos generados automáticamente por Prisma
+/generated/
+
+# Archivos temporales del sistema operativo
 .DS_Store
-EOF
-generated/
