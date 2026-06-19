@@ -2,7 +2,6 @@ import { AuthInterface, LoginSchemaDto, RegisterSchemaDto, ChangePasswordDto } f
 import * as argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../../Shared/Prisma';
-import { email } from 'zod';
 
 export class LoginService {
 
@@ -35,18 +34,18 @@ export class LoginService {
 
     async Register(Data: RegisterSchemaDto) {
 
+        if (Data.Password != Data.ConfirmPassword) {
+
+            const error: any = new Error("The Password should be the same")
+            error.statusCode = 400
+            throw error
+        }
+
         const User = await prisma.user.findUnique({ where: { Email: Data.Email } })
         if (User) {
 
             const error: any = new Error("Your account already exits")
             error.statusCode = 409;
-            throw error
-        }
-
-        if (Data.Password != Data.ConfirmPassword) {
-
-            const error: any = new Error("The Password should be the same")
-            error.statusCode = 400
             throw error
         }
 
@@ -65,13 +64,28 @@ export class LoginService {
     }
 
     async changePasswordService(userId: number, data: ChangePasswordDto) {
+
+        if (data.newPassword !== data.confirmNewPassword) {
+
+            const error: any = new Error("Passwords do not match")
+            error.statusCode = 400
+            throw error
+        }
+
         const User = await prisma.user.findUnique({ where: { Id: userId } });
-        if (!User) throw new Error("User not found");
+        if (!User) {
+            const error: any = new Error("User not found")
+            error.statusCode = 404
+            throw error
+        }
 
         const PasswordCompare = await argon2.verify(User.PasswordHash, data.currentPassword);
-        if (!PasswordCompare) throw new Error("Invalid current password");
+        if (!PasswordCompare) {
+            const error: any = new Error("Invalid current password")
+            error.statusCode = 401
+            throw error
+        }
 
-        if (data.newPassword !== data.confirmNewPassword) throw new Error("Passwords do not match");
 
         const HashData = await argon2.hash(data.newPassword);
 
@@ -83,14 +97,21 @@ export class LoginService {
     }
 
     async deleteAuthService(userId: number, currentPassword: string) {
+
         const User = await prisma.user.findUnique({ where: { Id: userId } });
-        if (!User) throw new Error("User not found");
+        if (!User) {
+            const error: any = new Error("User not found")
+            error.statusCode = 404
+            throw error
+        }
 
         const PasswordCompare = await argon2.verify(User.PasswordHash, currentPassword);
-        if (!PasswordCompare) throw new Error("Invalid password");
+        if (!PasswordCompare) {
+            const error: any = new Error("Invalid password")
+            error.statusCode = 401
+            throw error
+        }
 
-        // Al tener configurado el 'onDelete: Cascade' en Prisma, 
-        // esta sola línea borrará todo el árbol de despensas e ítems.
         await prisma.user.delete({ where: { Id: userId } });
         return "User deleted successfully";
     }
