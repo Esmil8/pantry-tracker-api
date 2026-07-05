@@ -1,10 +1,10 @@
-# 🍎 Pantry Tracker API
+#  Pantry Tracker API
 
 **Pantry Tracker API** es una solución robusta de backend para la gestión inteligente del inventario de alimentos. Esta API ayuda a los usuarios a realizar un seguimiento de los productos de su despensa, gestionar fechas de vencimiento con clasificación automática de frescura, organizar unidades y categorías, y optimizar el consumo de alimentos.
 
 ---
 
-## 🚀 Características Clave
+##  Características Clave
 
 *   **Autenticación Segura con Hilos de Trabajo**: Las contraseñas se gestionan de forma asíncrona mediante un pool de hilos de trabajo gestionado con **Piscina**, descargando las operaciones pesadas de hashing (Argon2/Bcrypt) fuera del hilo principal de Node.js.
 *   **Límites de Peticiones Centralizados (Rate Limiting)**: Implementación de un limitador de peticiones respaldado por **Redis** (`express-rate-limit` + `rate-limit-redis`). Esto garantiza que los límites se apliquen correctamente a nivel global incluso al escalar la aplicación en múltiples instancias con PM2 en modo Cluster.
@@ -14,7 +14,7 @@
 
 ---
 
-## 🛠️ Stack Tecnológico
+##  Stack Tecnológico
 
 *   **Runtime & Lenguaje**: Node.js & TypeScript
 *   **Framework Web**: Express
@@ -27,7 +27,7 @@
 
 ---
 
-## ⚙️ Configuración del Entorno (.env)
+##  Configuración del Entorno (.env)
 
 Crea un archivo `.env` en la raíz del proyecto con la siguiente estructura:
 
@@ -50,7 +50,7 @@ EMAIL_PASSWORD="tu-contraseña-aplicacion"
 REDIS_URL="redis://localhost:6379"
 ```
 
-### 🐳 Levantar Servicios en Docker
+###  Levantar Servicios en Docker
 Si usas contenedores de Docker para las bases de datos locales, asegúrate de levantar SQL Server y Redis:
 ```bash
 # Iniciar contenedores existentes
@@ -59,7 +59,7 @@ docker start pantry-redis sqlserver
 
 ---
 
-## 🧪 Pruebas Unitarias y de Integración
+##  Pruebas Unitarias y de Integración
 
 El proyecto utiliza **Vitest** para garantizar la fiabilidad de las reglas de negocio y algoritmos de expiración. Congelamos la hora del sistema en las pruebas con Fake Timers para evitar inconsistencias de zona horaria.
 
@@ -73,7 +73,7 @@ pnpm exec vitest --ui
 
 ---
 
-## 📋 Scripts Disponibles (`package.json`)
+##  Scripts Disponibles (`package.json`)
 
 En el proyecto puedes ejecutar los siguientes scripts utilizando `pnpm`:
 
@@ -95,7 +95,7 @@ En el proyecto puedes ejecutar los siguientes scripts utilizando `pnpm`:
 
 ---
 
-## 🚀 Despliegue Clúster (PM2 + Redis Rate Limiter)
+##  Despliegue Clúster (PM2 + Redis Rate Limiter)
 
 Para producción, la aplicación está configurada para balancear la carga automáticamente mediante clustering de PM2:
 
