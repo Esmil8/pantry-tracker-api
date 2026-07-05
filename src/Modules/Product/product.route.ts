@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { validate } from '../../Shared/Middlewares/MiddlewareValidator'
 import { createProductSchema, updateProductSchema, getProductsQuerySchema, getProductsParamsSchema, deleteProductParamsSchema } from './product.schema'
 import { AuthMiddleware } from '../../Shared/Middlewares/Auth.middleware'
-import { ProductContainer } from '../../Shared/Container';
+import { ProductContainer } from '../../Utils/Container';
 const router = Router()
 
 router.get('/', AuthMiddleware, validate({ query: getProductsQuerySchema }), ProductContainer.ProductController.getProducts.bind(ProductContainer.ProductController));

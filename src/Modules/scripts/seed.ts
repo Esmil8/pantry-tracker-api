@@ -1,4 +1,4 @@
-import { prisma } from "../../Shared/Prisma";
+import { prisma } from "../../Shared/Databases/Prisma";
 
 
 async function seed() {

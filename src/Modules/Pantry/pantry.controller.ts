@@ -2,6 +2,7 @@ import { PantryService } from "./pantry.service";
 import { Request, Response } from "express";
 import { PantryQueryDto } from './pantry.schema';
 import { AuthInterface } from '../Auth/Auth.schema';
+import { setRedis, getRedis, deleteRedis, deleteRedisPattern } from "../Common/Services/redis.helper";
 
 export class PantryController {
 
@@ -13,6 +14,8 @@ export class PantryController {
         const Data = req.body;
 
         await this.pantryService.createPantry(UserId, Data);
+
+        await deleteRedis(`pantries:user:${UserId}`);
 
         return res.status(201).json({
             Data: Data,
@@ -28,6 +31,8 @@ export class PantryController {
 
         await this.pantryService.addPantryItem(UserId, PantryId, Data);
 
+        await deleteRedisPattern(`pantry_items:user:${UserId}:pantry:${PantryId}:*`);
+
         return res.status(201).json({
             Status: "Success",
             Message: "Item added to pantry successfully"
@@ -38,7 +43,19 @@ export class PantryController {
         const { user } = req as AuthInterface;
         const UserId = Number(user?.id);
 
+        const cacheKey = `pantries:user:${UserId}`;
+        const cachedData = await getRedis(cacheKey);
+        if (cachedData) {
+            return res.status(200).json({
+                Status: "Success",
+                Data: cachedData,
+                Message: "Pantries fetched successfully"
+            });
+        }
+
         const data = await this.pantryService.findPantriesByUser(UserId);
+
+        await setRedis(cacheKey, data, 3600);
 
         return res.status(200).json({
             Status: "Success",
@@ -57,6 +74,22 @@ export class PantryController {
         const PantryId = Number(req.params.pantryId);
 
         const ProductName = req.query.ProductName as string;
+
+        const sortedQuery = Object.keys(req.query).sort().reduce((acc, key) => {
+            acc[key] = req.query[key];
+            return acc;
+        }, {} as any);
+        const cacheKey = `pantry_items:user:${UserId}:pantry:${PantryId}:${JSON.stringify(sortedQuery)}`;
+
+        const cachedData = await getRedis(cacheKey);
+        if (cachedData) {
+            return res.status(200).json({
+                Status: "Success",
+                Data: cachedData,
+                Message: "Fetched successfully"
+            });
+        }
+
         const data = await this.pantryService.findAllItemsByPantry(
             UserId,
             PantryId,
@@ -65,6 +98,8 @@ export class PantryController {
             limit,
             ProductName
         );
+
+        await setRedis(cacheKey, data, 3600);
 
         return res.status(200).json({
             Status: "Success",
@@ -84,6 +119,8 @@ export class PantryController {
 
         await this.pantryService.updatePantryItem(UserId, PantryId, ItemId, Data);
 
+        await deleteRedisPattern(`pantry_items:user:${UserId}:pantry:${PantryId}:*`);
+
         return res.status(200).json({
             Status: "Success",
             Message: "Item Updated Successfully"
@@ -97,6 +134,8 @@ export class PantryController {
         const ItemId = Number(req.params.id);
 
         const data = await this.pantryService.deletePantryItem(UserId, PantryId, ItemId);
+
+        await deleteRedisPattern(`pantry_items:user:${UserId}:pantry:${PantryId}:*`);
 
         return res.status(200).json({
             Status: "Success",

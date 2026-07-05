@@ -1,7 +1,7 @@
-import { prisma } from '../../Shared/Prisma';
+import { prisma } from '../../Shared/Databases/Prisma';
 import { Prisma } from '../../../generated/prisma';
 import { CreatePantryDto, findPantryItemQueryDto, AddPantryItemDto, UpdatePantryItemDto } from './pantry.schema'
-import { getLimit } from '../../Shared/Pagination.helper';
+import { getLimit } from '../../Utils/Pagination.helper';
 
 export class PantryRepository {
 
