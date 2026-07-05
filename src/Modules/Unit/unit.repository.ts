@@ -1,5 +1,5 @@
-import { getLimit } from "../../Shared/Pagination.helper";
-import { prisma } from "../../Shared/Prisma";
+import { getLimit } from "../../Utils/Pagination.helper";
+import { prisma } from "../../Shared/Databases/Prisma";
 import { CreateUnitDto, GetUnitsQueryDto } from "./unit.schema";
 
 export class UnitRepository {

@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { prisma } from "../../Shared/Prisma";
+import { prisma } from "../../Shared/Databases/Prisma";
 
 async function runStressSeed() {
     console.log("🧹 Limpiando base de datos completa para el laboratorio...");
@@ -30,16 +30,16 @@ async function runStressSeed() {
     // ─── 2. UNIDADES ──────────────────────────────────────────────────────────
     console.log("📏 Generando 10 unidades ficticias...");
     const units = [
-        { Name: "Kilogramo",    Abbreviation: "kg"  },
-        { Name: "Gramo",        Abbreviation: "g"   },
-        { Name: "Libra",        Abbreviation: "lb"  },
-        { Name: "Onza",         Abbreviation: "oz"  },
-        { Name: "Litro",        Abbreviation: "l"   },
-        { Name: "Mililitro",    Abbreviation: "ml"  },
-        { Name: "Unidad",       Abbreviation: "un"  },
-        { Name: "Paquete",      Abbreviation: "pkg" },
-        { Name: "Caja",         Abbreviation: "box" },
-        { Name: "Lata",         Abbreviation: "can" },
+        { Name: "Kilogramo", Abbreviation: "kg" },
+        { Name: "Gramo", Abbreviation: "g" },
+        { Name: "Libra", Abbreviation: "lb" },
+        { Name: "Onza", Abbreviation: "oz" },
+        { Name: "Litro", Abbreviation: "l" },
+        { Name: "Mililitro", Abbreviation: "ml" },
+        { Name: "Unidad", Abbreviation: "un" },
+        { Name: "Paquete", Abbreviation: "pkg" },
+        { Name: "Caja", Abbreviation: "box" },
+        { Name: "Lata", Abbreviation: "can" },
     ];
 
     await prisma.unit.createMany({ data: units });
@@ -53,15 +53,15 @@ async function runStressSeed() {
 
     for (let i = 0; i < 5000; i++) {
         const randomCategory = existingCategories[Math.floor(Math.random() * existingCategories.length)];
-        const randomUnit     = existingUnits[Math.floor(Math.random() * existingUnits.length)];
+        const randomUnit = existingUnits[Math.floor(Math.random() * existingUnits.length)];
 
         productsToInsert.push({
-            Name:        faker.commerce.productName(),
+            Name: faker.commerce.productName(),
             Description: faker.lorem.words(10),
-            BarCode:     faker.string.alphanumeric(12),
-            Brand:       faker.company.name(),
-            CategoryId:  randomCategory.Id,
-            UnitId:      randomUnit.Id,
+            BarCode: faker.string.alphanumeric(12),
+            Brand: faker.company.name(),
+            CategoryId: randomCategory.Id,
+            UnitId: randomUnit.Id,
             CreatedDate: new Date(),
             UpdatedDate: new Date(),
         });
@@ -78,7 +78,7 @@ async function runStressSeed() {
     for (let i = 0; i < 5; i++) {
         const newPantry = await prisma.pantry.create({
             data: {
-                Name:   `Alacena ${faker.person.firstName()}`,
+                Name: `Alacena ${faker.person.firstName()}`,
                 UserId: 1,
             },
         });
@@ -95,12 +95,12 @@ async function runStressSeed() {
         const randomPantryId = pantries[Math.floor(Math.random() * pantries.length)];
 
         itemsToInsert.push({
-            ProductId:      randomProduct.Id,
-            PantryId:       randomPantryId,
-            Quantity:       faker.number.int({ min: 1, max: 100 }),
+            ProductId: randomProduct.Id,
+            PantryId: randomPantryId,
+            Quantity: faker.number.int({ min: 1, max: 100 }),
             ExpirationDate: faker.date.future({ years: 8 }),
-            CreatedDate:    new Date(),
-            UpdatedDate:    new Date(),
+            CreatedDate: new Date(),
+            UpdatedDate: new Date(),
         });
     }
 

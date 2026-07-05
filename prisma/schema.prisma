@@ -81,4 +81,5 @@ model Product {
 
   @@index([CategoryId])
   @@index([UnitId])
+  @@index([Name])
 }

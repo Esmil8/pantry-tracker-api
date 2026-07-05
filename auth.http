@@ -10,6 +10,7 @@
 ### Registro de usuario
 POST {{baseUrl}}/auth/register
 Content-Type: application/json
+Accept-Encoding: gzip
 
 {
     "Name": "{{name}}",
@@ -25,7 +26,7 @@ Content-Type: application/json
 # @name auth_request
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
-
+Accept-Encoding: gzip
 {
     "Email": "{{email}}",
     "Password": "{{password}}"

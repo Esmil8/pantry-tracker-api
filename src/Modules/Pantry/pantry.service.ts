@@ -70,20 +70,6 @@ export class PantryService {
     }
 
     async addPantryItem(userId: number, pantryId: number, data: AddPantryItemDto) {
-        const pantry = await this.pantryRepository.findPantryById(pantryId);
-
-        if (!pantry) {
-            const error: any = new Error("Pantry not found");
-            error.statusCode = 404;
-            throw error;
-        }
-
-        if (pantry.UserId !== userId) {
-            const error: any = new Error("Unauthorized: This pantry does not belong to you");
-            error.statusCode = 403;
-            throw error;
-        }
-
         if (data.ExpirationDate && data.ExpirationDate < new Date()) {
             const error: any = new Error("Cannot add an expired product to the pantry");
             error.statusCode = 400;
@@ -96,10 +82,22 @@ export class PantryService {
             throw error;
         }
 
-        await this.pantryRepository.addPantryItem(pantryId, data);
-        return {
-            message: "Item added to pantry successfully"
-        };
+        try {
+
+            await this.pantryRepository.addPantryItem(userId, pantryId, data);
+
+            return {
+                message: "Item added to pantry successfully"
+            };
+        } catch (prismaError: any) {
+
+            if (prismaError.code === 'P2025') {
+                const error: any = new Error("Pantry not found or Unauthorized");
+                error.statusCode = 404;
+                throw error;
+            }
+            throw prismaError;
+        }
     }
 
     async findPantriesByUser(userId: number) {
@@ -118,19 +116,6 @@ export class PantryService {
     }
 
     async findAllItemsByPantry(userId: number, pantryId: number, status?: string, page: number = 1, limit: number = 20, ProductName?: string) {
-        const pantry = await this.pantryRepository.findPantryById(pantryId);
-
-        if (!pantry) {
-            const error: any = new Error("Pantry not found");
-            error.statusCode = 404;
-            throw error;
-        }
-
-        if (pantry.UserId !== userId) {
-            const error: any = new Error("Unauthorized: You don't have access to this pantry");
-            error.statusCode = 403;
-            throw error;
-        }
 
         const DateFilter = this.getExpirationFilters(status);
         const nowUTC = new Date();
@@ -138,12 +123,31 @@ export class PantryService {
         const nowMs = nowUTC.getTime();
 
         const items = await this.pantryRepository.findItemsByPantryId(
+            userId,
             pantryId,
             {
                 productName: ProductName,
                 DateFilter: DateFilter
             },
             page, limit);
+
+        if (items.length === 0) {
+            const pantryExists = await this.pantryRepository.findPantryById(pantryId);
+
+            if (!pantryExists) {
+                const error: any = new Error("Pantry not found");
+                error.statusCode = 404;
+                throw error;
+            }
+
+            if (pantryExists.UserId !== userId) {
+                const error: any = new Error("Unauthorized: You don't have access to this pantry");
+                error.statusCode = 403;
+                throw error;
+            }
+
+            return [];
+        }
 
         return items.map(item => ({
             ...item,
@@ -154,14 +158,6 @@ export class PantryService {
 
 
     async updatePantryItem(userId: number, pantryId: number, itemId: number, data: UpdatePantryItemDto) {
-        const pantry = await this.pantryRepository.findPantryById(pantryId);
-
-        if (!pantry || pantry.UserId !== userId) {
-            const error: any = new Error("Unauthorized or Pantry not found");
-            error.statusCode = 403;
-            throw error;
-        }
-
         if (data.ExpirationDate != undefined && data.ExpirationDate <= new Date()) {
             const error: any = new Error("Cannot add expired product at the pantry");
             error.statusCode = 400;
@@ -174,7 +170,7 @@ export class PantryService {
             throw error;
         }
 
-        const result = await this.pantryRepository.updatePantryItem(pantryId, itemId, data);
+        const result = await this.pantryRepository.updatePantryItem(userId, pantryId, itemId, data);
 
         if (result.count === 0) {
             const error: any = new Error("Product not found");
@@ -188,15 +184,8 @@ export class PantryService {
     }
 
     async deletePantryItem(userId: number, pantryId: number, itemId: number) {
-        const pantry = await this.pantryRepository.findPantryById(pantryId);
 
-        if (!pantry || pantry.UserId !== userId) {
-            const error: any = new Error("Unauthorized or Pantry not found");
-            error.statusCode = 403;
-            throw error;
-        }
-
-        const result = await this.pantryRepository.deletePantryItem(pantryId, itemId);
+        const result = await this.pantryRepository.deletePantryItem(userId, pantryId, itemId);
 
         if (result.count === 0) {
             const error: any = new Error("Product not found");

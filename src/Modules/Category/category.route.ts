@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { validate } from '../../Shared/Middlewares/MiddlewareValidator';
 import { createCategorySchema, getCategoriesQuerySchema, getCategoriesParamsSchema } from './category.schema';
 import { AuthMiddleware } from '../../Shared/Middlewares/Auth.middleware';
-import { CategoryContainer } from '../../Shared/Container';
+import { CategoryContainer } from '../../Utils/Container';
 
 const router = Router();
 

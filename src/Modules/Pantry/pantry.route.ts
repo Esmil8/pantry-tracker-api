@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { validate } from '../../Shared/Middlewares/MiddlewareValidator';
 import { createPantrySchema, addPantryItemSchema, updatePantryItemSchema, userIdParamsSchema, DeletePantryItemSchema, pantryQuerySchema, getPantryItemParamsSchema } from './pantry.schema';
 import { AuthMiddleware } from '../../Shared/Middlewares/Auth.middleware'
-import { PantryContainer } from '../../Shared/Container';
+import { PantryContainer } from '../../Utils/Container';
 
 const router = Router();
 

@@ -7,10 +7,15 @@
 		"bcrypt": "^6.0.0",
 		"dotenv": "^17.4.2",
 		"express": "^5.2.1",
+		"express-rate-limit": "^8.5.2",
 		"helmet": "^8.1.0",
 		"jsonwebtoken": "^9.0.3",
 		"morgan": "^1.10.1",
 		"mssql": "^12.5.5",
+		"piscina": "^5.2.0",
+		"pm2": "^7.0.3",
+		"rate-limit-redis": "^5.0.0",
+		"redis": "^6.1.0",
 		"zod": "^4.4.3"
 	},
 	"devDependencies": {
@@ -35,6 +40,9 @@
 		"fake-seed": "tsx src/Modules/scripts/stress-seed.ts",
 		"build": "tsc",
 		"start": "node dist/main.js",
-		"profile": "clinic doctor -- node dist/main.js"
+		"profile": "clinic doctor -- node dist/main.js",
+		"prod:start": "pnpm build && pm2 start ecosystem.config.js",
+		"prod:stop": "pm2 delete pantry-tracker-api",
+		"prod:status": "pm2 status"
 	}
 }

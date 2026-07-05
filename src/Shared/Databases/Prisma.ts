@@ -1,5 +1,5 @@
 import "dotenv/config"
-import { PrismaClient } from "../../generated/prisma"
+import { PrismaClient } from "../../../generated/prisma"
 import { PrismaMssql } from "@prisma/adapter-mssql"
 
 const adapter = new PrismaMssql({
@@ -16,9 +16,6 @@ const adapter = new PrismaMssql({
 export const prisma = new PrismaClient({
     adapter,
     log: [
-        { emit: 'stdout', level: 'query' },
-        { emit: 'stdout', level: 'info' },
-        { emit: 'stdout', level: 'warn' },
         { emit: 'stdout', level: 'error' },
 
     ],

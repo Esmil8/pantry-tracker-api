@@ -1,4 +1,4 @@
-import { prisma } from '../../Shared/Prisma'
+import { prisma } from '../../Shared/Databases/Prisma'
 import { AuthInterface } from './Auth.schema'
 import { LoginService } from './AuthService'
 import { Request, Response, NextFunction } from 'express'
