@@ -27,6 +27,7 @@ Accept-Encoding: gzip
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
 Accept-Encoding: gzip
+
 {
     "Email": "{{email}}",
     "Password": "{{password}}"

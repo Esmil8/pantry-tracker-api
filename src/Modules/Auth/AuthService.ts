@@ -58,7 +58,15 @@ export class LoginService {
         }
 
         const token = jwt.sign({ id: User.Id }, process.env.JWT_SECRET!, { expiresIn: '4h' });
-        return { token, User: { email: User.Email } };
+        return {
+            token,
+            user: {
+                id: User.Id,
+                name: User.Name,
+                lastName: User.LastName,
+                email: User.Email
+            }
+        };
     }
 
     async Register(Data: RegisterSchemaDto) {

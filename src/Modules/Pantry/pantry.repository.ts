@@ -25,7 +25,8 @@ export class PantryRepository {
             where: { UserId: UserId },
             select: {
                 Id: true,
-                Name: true
+                Name: true,
+                CreatedDate: true
             }
         });
     }
