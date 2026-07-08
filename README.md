@@ -1,10 +1,12 @@
-# Pantry Tracker API
+
+#  Pantry Tracker API
 
 **Pantry Tracker API** es una solución robusta de backend para la gestión inteligente del inventario de alimentos. Esta API ayuda a los usuarios a realizar un seguimiento de los productos de su despensa, gestionar fechas de vencimiento con clasificación automática de frescura, organizar unidades y categorías, y optimizar el consumo de alimentos.
 
 ---
 
-## Características Clave
+
+#  Características Clave
 
 *   **Autenticación Segura con Hilos de Trabajo**: Las contraseñas se gestionan de forma asíncrona mediante un pool de hilos de trabajo gestionado con **Piscina**, descargando las operaciones pesadas de hashing (Argon2/Bcrypt) fuera del hilo principal de Node.js.
 
@@ -18,7 +20,8 @@
 
 ---
 
-## Stack Tecnológico
+
+##  Stack Tecnológico
 
 *   **Runtime & Lenguaje**: Node.js & TypeScript
 *   **Framework Web**: Express
@@ -32,7 +35,8 @@
 
 ---
 
-## Configuración del Entorno (.env)
+
+##  Configuración del Entorno (.env)
 
 Crea un archivo `.env` en la raíz del proyecto con la siguiente estructura:
 
@@ -55,16 +59,16 @@ EMAIL_PASSWORD="tu-contraseña-aplicacion"
 REDIS_URL="redis://localhost:6379"
 ```
 
-### 🐳 Levantar Servicios en Docker
+###  Levantar Servicios en Docker
 Si usas contenedores de Docker para las bases de datos locales, asegúrate de levantar SQL Server y Redis:
 ```bash
 # Iniciar contenedores existentes
 docker start pantry-redis sqlserver
 ```
 
----
 
-## Pruebas Unitarias y de Integración
+
+##  Pruebas Unitarias y de Integración
 
 El proyecto utiliza **Vitest** para garantizar la fiabilidad de las reglas de negocio y algoritmos de expiración. Congelamos la hora del sistema en las pruebas con Fake Timers para evitar inconsistencias de zona horaria.
 
@@ -78,7 +82,8 @@ pnpm exec vitest --ui
 
 ---
 
-## Scripts Disponibles (`package.json`)
+
+##  Scripts Disponibles (`package.json`)
 
 En el proyecto puedes ejecutar los siguientes scripts utilizando `pnpm`:
 
@@ -101,27 +106,3 @@ En el proyecto puedes ejecutar los siguientes scripts utilizando `pnpm`:
 *   `pnpm run fake-seed`: Genera una gran cantidad de datos aleatorios o masivos en la base de datos (stress-seed) para realizar pruebas de carga.
 *   `pnpm run benchmark`: Ejecuta un stress test automatizado de la API utilizando **Autocannon** para medir la latencia y peticiones por segundo.
 *   `pnpm run profile`: Levanta la aplicación compilada con **ClinicJS Doctor** para monitorizar el rendimiento, uso de CPU, retraso del bucle de eventos y detectar posibles fugas de memoria.
-
----
-
-## Despliegue Clúster (PM2 + Redis Rate Limiter)
-
-Para producción, la aplicación está configurada para balancear la carga automáticamente mediante clustering de PM2:
-
-```javascript
-// ecosystem.config.js
-module.exports = {
-    apps: [
-        {
-            name: 'pantry-tracker-api',
-            script: './dist/main.js',
-            instances: 'max',         // Balancea la carga entre todos los cores de CPU
-            exec_mode: 'cluster',
-            watch: false,
-            max_memory_restart: '1G' // Reinicia la instancia si excede 1GB de RAM
-        }
-    ]
-};
-```
-
-Debido a que múltiples instancias levantadas por PM2 comparten la carga entrante, el contador del limitador de peticiones se almacena centralizadamente en **Redis** (`rate-limit-redis`). Esto evita que un cliente salte los límites haciendo peticiones consecutivas a instancias de CPU distintas.
