@@ -1,0 +1,236 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Geist/Vercel CSS Variables */
+:root {
+  --color-ink: #171717;
+  --color-body: #4d4d4d;
+  --color-mute: #8f8f8f;
+  --color-faint: #a1a1a1;
+  --color-hairline: #ebebeb;
+  --color-hairline-soft: #f2f2f2;
+  --color-canvas: #fafafa;
+  --color-elevated: #ffffff;
+  --color-link: #0070f3;
+  --color-link-deep: #0761d1;
+  --color-link-soft: #d3e5ff;
+  --color-danger: #ee0000;
+  --color-danger-deep: #c50000;
+  --color-warning: #f5a623;
+  --color-warning-soft: #ffefcf;
+  --color-warning-deep: #ab570a;
+}
+
+.dark {
+  --color-ink: #fafafa;
+  --color-body: #a1a1a1;
+  --color-mute: #666666;
+  --color-faint: #333333;
+  --color-hairline: #222222;
+  --color-hairline-soft: #151515;
+  --color-canvas: #0b0b0b;
+  --color-elevated: #121212;
+  --color-link: #3291ff;
+  --color-link-deep: #0070f3;
+  --color-link-soft: #002b5c;
+  --color-danger: #ff3333;
+  --color-danger-deep: #ee0000;
+  --color-warning: #f5a623;
+  --color-warning-soft: #3b2800;
+  --color-warning-deep: #ffb01f;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply font-sans bg-canvas text-body;
+    margin: 0;
+    padding: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-ink font-semibold;
+  }
+
+  a {
+    @apply text-link no-underline;
+    transition: color 0.15s ease;
+  }
+
+  a:hover {
+    @apply text-link-deep;
+  }
+
+  input, select, textarea {
+    @apply font-sans;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-canvas);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-hairline);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-mute);
+  }
+}
+
+@layer components {
+  /* Geist Button variants */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-ink text-white font-medium text-sm
+           px-[14px] h-10 rounded-pill transition-all duration-150 select-none cursor-pointer
+           border border-transparent;
+  }
+  .btn-primary:hover {
+    @apply opacity-80;
+  }
+  .btn-primary:active {
+    @apply opacity-70 scale-[0.98];
+  }
+  .btn-primary:disabled {
+    @apply opacity-40 cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 bg-elevated text-ink font-medium text-sm
+           px-[14px] h-10 rounded-pill border border-hairline transition-all duration-150 select-none cursor-pointer;
+  }
+  .btn-secondary:hover {
+    @apply bg-hairline-soft;
+  }
+  .btn-secondary:disabled {
+    @apply opacity-40 cursor-not-allowed;
+  }
+
+  .btn-sm {
+    @apply inline-flex items-center justify-center gap-1.5 bg-ink text-white font-medium text-sm
+           px-3 h-8 rounded-sm transition-all duration-150 select-none cursor-pointer border border-transparent;
+  }
+  .btn-sm:hover {
+    @apply opacity-80;
+  }
+  .btn-sm:disabled {
+    @apply opacity-40 cursor-not-allowed;
+  }
+
+  .btn-ghost-sm {
+    @apply inline-flex items-center justify-center gap-1.5 bg-elevated text-ink font-medium text-sm
+           px-3 h-8 rounded-sm border border-hairline transition-all duration-150 select-none cursor-pointer;
+  }
+  .btn-ghost-sm:hover {
+    @apply bg-hairline-soft;
+  }
+  .btn-ghost-sm:disabled {
+    @apply opacity-40 cursor-not-allowed;
+  }
+
+  .btn-danger-sm {
+    @apply inline-flex items-center justify-center gap-1.5 bg-danger text-white font-medium text-sm
+           px-3 h-8 rounded-sm border border-transparent transition-all duration-150 select-none cursor-pointer;
+  }
+  .btn-danger-sm:hover {
+    @apply opacity-80;
+  }
+
+  /* Geist Input */
+  .geist-input {
+    @apply w-full bg-elevated text-ink border border-hairline rounded-sm text-sm
+           px-3 py-2 placeholder:text-faint outline-none transition-all duration-150;
+  }
+  .geist-input:focus {
+    @apply border-ink ring-1 ring-ink;
+  }
+  .geist-input:disabled {
+    @apply bg-hairline-soft text-mute cursor-not-allowed;
+  }
+
+  /* Geist Card */
+  .geist-card {
+    @apply bg-elevated border border-hairline rounded-md shadow-whisper;
+  }
+
+  /* Mono eyebrow */
+  .eyebrow {
+    @apply font-mono text-xs font-medium uppercase tracking-wider text-mute;
+  }
+
+  /* Status badge */
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  /* Sidebar nav link */
+  .sidebar-link {
+    @apply flex items-center gap-3 px-3 py-2 rounded-sm text-sm font-medium text-body
+           transition-all duration-150 select-none cursor-pointer;
+  }
+  .sidebar-link:hover {
+    @apply bg-hairline-soft text-ink;
+  }
+  .sidebar-link.active {
+    @apply bg-ink text-white;
+  }
+
+  /* Table */
+  .geist-table {
+    @apply w-full text-sm;
+  }
+  .geist-table th {
+    @apply text-left text-xs font-medium text-mute uppercase tracking-wider
+           px-4 py-3 border-b border-hairline bg-canvas;
+  }
+  .geist-table td {
+    @apply px-4 py-3 border-b border-hairline text-body;
+  }
+  .geist-table tr:last-child td {
+    @apply border-b-0;
+  }
+  .geist-table tbody tr {
+    @apply transition-colors duration-100;
+  }
+  .geist-table tbody tr:hover {
+    @apply bg-hairline-soft;
+  }
+}
+
+/* Hero gradient (mesh) */
+.hero-gradient {
+  background: radial-gradient(ellipse at 20% 50%, rgba(0, 112, 243, 0.12) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(121, 40, 202, 0.10) 0%, transparent 50%),
+              radial-gradient(ellipse at 60% 80%, rgba(80, 227, 194, 0.08) 0%, transparent 50%),
+              var(--color-canvas);
+}
+
+/* Gradient develop/preview/ship accents */
+.gradient-develop {
+  background: linear-gradient(135deg, #007cf0, #00dfd8);
+}
+.gradient-preview {
+  background: linear-gradient(135deg, #7928ca, #ff0080);
+}
+.gradient-ship {
+  background: linear-gradient(135deg, #ff4d4d, #f9cb28);
+}
+
+/* Page transition */
+.page-enter {
+  animation: fadeIn 0.2s ease-out;
+}

@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlserver"
+}
+
+model User {
+  Id           Int      @id @default(autoincrement())
+  Name         String   @db.NVarChar(100)
+  LastName     String   @db.NVarChar(100)
+  Email        String   @unique @db.NVarChar(100)
+  PasswordHash String   @db.NVarChar(255)
+  CreatedDate  DateTime @default(now()) @db.DateTime
+  UpdatedDate  DateTime @updatedAt @db.DateTime
+  Pantries     Pantry[]
+}
+
+model Category {
+  Id          Int       @id @default(autoincrement())
+  Name        String    @db.NVarChar(100)
+  Description String    @db.NVarChar(255)
+  CreatedDate DateTime  @default(now()) @db.DateTime
+  UpdatedDate DateTime  @updatedAt @db.DateTime
+  Product     Product[]
+}
+
+model Unit {
+  Id           Int       @id @default(autoincrement())
+  Name         String    @db.NVarChar(100)
+  Abbreviation String    @db.NVarChar(10)
+  CreatedDate  DateTime  @default(now()) @db.DateTime
+  UpdatedDate  DateTime  @updatedAt @db.DateTime
+  Product      Product[]
+}
+
+model Pantry {
+  Id          Int          @id @default(autoincrement())
+  Name        String       @db.NVarChar(100)
+  UserId      Int
+  User        User         @relation(fields: [UserId], references: [Id], onDelete: Cascade)
+  CreatedDate DateTime     @default(now()) @db.DateTime
+  UpdatedDate DateTime     @updatedAt @db.DateTime
+  PantryItems PantryItem[]
+
+  @@index([UserId])
+}
+
+model PantryItem {
+  Id             Int       @id @default(autoincrement())
+  PantryId       Int
+  Pantry         Pantry    @relation(fields: [PantryId], references: [Id], onDelete: Cascade)
+  ProductId      Int
+  Product        Product   @relation(fields: [ProductId], references: [Id])
+  ExpirationDate DateTime? @db.Date
+  Location       String?   @db.NVarChar(255)
+  Quantity       Decimal   @db.Decimal(10, 5)
+  Notes          String?   @db.NVarChar(500)
+  CreatedDate    DateTime  @default(now()) @db.DateTime
+  UpdatedDate    DateTime  @updatedAt @db.DateTime
+
+  @@unique([PantryId, ProductId, ExpirationDate, Location])
+  @@index([PantryId])
+}
+
+model Product {
+  Id          Int          @id @default(autoincrement())
+  CategoryId  Int
+  Category    Category     @relation(fields: [CategoryId], references: [Id])
+  UnitId      Int
+  Unit        Unit         @relation(fields: [UnitId], references: [Id])
+  Name        String       @db.NVarChar(100)
+  Description String       @db.NVarChar(255)
+  Brand       String       @db.NVarChar(100)
+  BarCode     String       @unique @db.NVarChar(50)
+  CreatedDate DateTime     @default(now()) @db.DateTime
+  UpdatedDate DateTime     @updatedAt @db.DateTime
+  PantryItems PantryItem[]
+
+  @@index([CategoryId])
+  @@index([UnitId])
+  @@index([Name])
+}

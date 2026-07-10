@@ -1,0 +1,190 @@
+@baseUrl = http://localhost:8000
+@name = Esmil
+@lastName = Adames
+@email = {{$dotenv EMAIL_ADDRESS}}
+@password = {{$dotenv EMAIL_PASSWORD}}
+### =========================================================
+###                      AUTH MODULE
+### =========================================================
+
+### Registro de usuario
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+Accept-Encoding: gzip
+
+{
+    "Name": "{{name}}",
+    "LastName": "{{lastName}}",
+    "Email": "{{email}}",
+    "Password": "{{password}}",
+    "ConfirmPassword": "{{password}}"
+}
+
+
+
+### Login
+# @name auth_request
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+Accept-Encoding: gzip
+
+{
+    "Email": "{{email}}",
+    "Password": "{{password}}"
+}
+
+### Borrar Usuario
+DELETE {{baseUrl}}/auth/delete
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+### =========================================================
+###                    PRODUCTS MODULE
+### =========================================================
+
+### Crear Producto
+POST {{baseUrl}}/products
+Content-Type: application/json
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+{
+    "Name": "Arroz Selecto",
+    "Description": "Arroz de grano largo premium",
+    "Brand": "La Garza",
+    "BarCode": "7441234567890",
+    "CategoryId": 1,
+    "UnitId": 2
+}
+
+### Obtener todos los productos
+GET {{baseUrl}}/products
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+### Obtener productos con filtros y paginación
+GET {{baseUrl}}/products?name=Arroz&page=1&limit=10
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+### Obtener producto por ID
+GET {{baseUrl}}/products/1
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+### Actualizar producto
+PUT {{baseUrl}}/products/1
+Content-Type: application/json
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+{
+    "Name": "Arroz Selecto Premium",
+    "Description": "Arroz de grano largo edición especial"
+}
+
+### Eliminar producto
+DELETE {{baseUrl}}/products/1
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+### =========================================================
+###                   CATEGORIES MODULE
+### =========================================================
+
+### Crear Categoría
+POST {{baseUrl}}/categories
+Content-Type: application/json
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+{
+    "Name": "Granos y Cereales",
+    "Description": "Productos como arroz, avena y otros cereales"
+}
+
+### Obtener todas las categorías
+GET {{baseUrl}}/categories
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+### Obtener categorías con filtros
+GET {{baseUrl}}/categories?name=Granos&page=1&limit=10
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+### Obtener categoría por ID
+GET {{baseUrl}}/categories/1
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+### =========================================================
+###                     UNITS MODULE
+### =========================================================
+
+### Crear Unidad
+POST {{baseUrl}}/units
+Content-Type: application/json
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+{
+    "Name": "Kilogramo",
+    "Abbreviation": "kg"
+}
+
+### Obtener todas las unidades
+GET {{baseUrl}}/units
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+### Obtener unidades con filtros
+GET {{baseUrl}}/units?name=Kilo&page=1&limit=10
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+### Obtener unidad por ID
+GET {{baseUrl}}/units/1
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+### =========================================================
+###                    PANTRY MODULE
+### =========================================================
+
+### Crear Despensa
+POST {{baseUrl}}/pantry
+Content-Type: application/json
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+{
+    "Name": "Despensa Principal"
+}
+
+### Agregar Item a la Despensa
+POST {{baseUrl}}/pantry/1/items
+Content-Type: application/json
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+{
+    "ProductId": 1,
+    "Quantity": 5,
+    "ExpirationDate": "2026-07-15",
+    "Location": "Estante superior",
+    "Notes": "Comprado en oferta"
+}
+
+### Obtener despensas
+GET {{baseUrl}}/pantry/1
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+### Obtener Items de una Despensa
+GET {{baseUrl}}/pantry/1/items?page=1&limit=20
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+### Obtener Items filtrados por estado de expiración
+GET {{baseUrl}}/pantry/1/items?status=CRITICAL&page=1&limit=20
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+### Obtener Items filtrados por nombre de producto
+GET {{baseUrl}}/pantry/2/items?ProductName=Arroz&page=1&limit=20
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+### Actualizar Item de la Despensa
+PUT {{baseUrl}}/pantry/1/items/1
+Content-Type: application/json
+Authorization: Bearer {{auth_request.response.body.Data.token}}
+
+{
+    "Quantity": 3,
+    "Location": "Estante inferior"
+}
+
+### Eliminar Item de la Despensa
+DELETE {{baseUrl}}/pantry/1/items/1
+Authorization: Bearer {{auth_request.response.body.Data.token}}
