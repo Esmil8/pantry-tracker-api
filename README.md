@@ -1,4 +1,4 @@
-# 🍽️ Pantry Tracker
+# Pantry Tracker
 
 **Pantry Tracker** es una aplicación full-stack para la gestión inteligente del inventario de alimentos. Permite a los usuarios realizar un seguimiento de los productos de su despensa, gestionar fechas de vencimiento con clasificación automática de frescura, organizar unidades y categorías, y optimizar el consumo de alimentos reduciendo el desperdicio.
 
