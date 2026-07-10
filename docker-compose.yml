@@ -1,0 +1,90 @@
+# ORQUESTADOR DE CONTENEDORES
+version: '3.8'
+
+services:
+  # 1. SQL SERVER (Base de datos)
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: pantry-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "${MSSQL_REAL_PASSWORD}"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+    healthcheck:
+      test: [ "CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${MSSQL_REAL_PASSWORD}", "-Q", "SELECT 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pantry-network
+
+  # 2. REDIS (Caché)
+  redis:
+    image: redis:7-alpine
+    container_name: pantry-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - pantry-network
+
+  # 3. BACKEND (API con Express + PM2)
+  backend:
+    build:
+      context: ./pantry-tracker-backend
+      dockerfile: Dockerfile
+    container_name: pantry-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=sqlserver://sa:${MSSQL_REAL_PASSWORD}@sqlserver:1433/PantryTrackerDB?encrypt=true&trustServerCertificate=true
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    restart: unless-stopped
+    networks:
+      - pantry-network
+
+  # 4. FRONTEND (React + Vite + Tailwind)
+  frontend:
+    build:
+      context: ./pantry-tracker-frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://backend:8000
+    container_name: pantry-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - pantry-network
+
+# VOLÚMENES PERSISTENTES 
+volumes:
+  sql_data:
+  redis_data:
+
+    # RED INTERNA 
+networks:
+  pantry-network:
+    driver: bridge
